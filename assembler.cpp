@@ -15,8 +15,8 @@ public:
 
     void assemble() {
         loadfile();
-        printfile();
         cleanInstructions();
+                printcleanfile();
     }
 
 private:
@@ -32,8 +32,8 @@ private:
         }
     }
     // debuggin function - TO REMOVE   
-    void printfile(){
-        for(auto &i: instructionList)
+    void printcleanfile(){
+        for(auto &i: cleanInstructionList)
             std::cout<< i <<"\n";
     }
     void cleanInstructions(){
@@ -46,7 +46,11 @@ private:
             //remove trailing whitespace
             ins.erase(std::find_if(ins.rbegin(), ins.rend(), [](char ch){ return !isspace(ch);}).base(), ins.end());
             //remove leading whitespace
-            ins.erase(std::find_if(ins.rbegin(), ins.rend(), [](char ch){ return !isspace(ch);}).base(), ins.end());
+            ins.erase(ins.begin(), std::find_if(ins.begin(), ins.end(), [](char ch){ return !isspace(ch);}));
+            //if the instruction is not an empty line after cleaning add it to the clean instruction list
+            if(!ins.empty()){
+                cleanInstructionList.push_back(ins);
+            }
 
         }
     }

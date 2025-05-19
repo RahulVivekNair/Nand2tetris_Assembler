@@ -5,6 +5,7 @@
 #include <vector>
 #include <sstream>
 #include <algorithm>
+#include<bitset>
 
 class Assembler {
 public:
@@ -16,7 +17,9 @@ public:
     void assemble() {
         loadfile();
         cleanInstructions();
-                printcleanfile();
+        printcleanfile();
+        parseAndTranslate();
+        writeOutput();
     }
 
 private:
@@ -25,6 +28,8 @@ private:
     std::string instruction;
     std::vector<std::string> instructionList;
     std::vector<std::string> cleanInstructionList;
+    std::vector<std::string> machineInstructionList;
+
     void loadfile(){
         std::ifstream infile(inputFileName);        
         while(getline(infile,instruction)){
@@ -53,6 +58,21 @@ private:
             }
 
         }
+    }
+    void parseAndTranslate(){
+        for(auto &ins: cleanInstructionList){
+            //handling A instruction
+            if(ins[0]=='@'){
+                std::string valueStr = ins.substr(1);
+                std::string binaryCode = std::bitset<16>(std::stoi(valueStr)).to_string();
+                machineInstructionList.push_back(binaryCode);
+            }
+            //Handling C-instructions
+            
+        }
+    }
+    void writeOutput(){
+
     }
 };
 

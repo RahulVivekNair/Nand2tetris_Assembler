@@ -20,18 +20,44 @@ public:
     {
         loadfile();
         cleanInstructions();
+        populateSymbolTable();
         parseAndTranslate();
         writeOutput();
     }
 
 private:
+    int variableAddress =16;
     std::string inputFileName;
     std::string outputFileName;
     std::string instruction;
     std::vector<std::string> instructionList;
     std::vector<std::string> cleanInstructionList;
     std::vector<std::string> machineInstructionList;
-    std::unordered_map<std::string, int> symbolTable;
+    std::unordered_map<std::string, int> symbolTable ={
+        {"SP", 0},
+        {"LCL",1},
+        {"ARG",2},
+        {"THIS", 3},
+        {"THAT", 4},
+        {"R0", 0},
+        {"R1", 1},
+        {"R2", 2},
+        {"R3", 3},
+        {"R4", 4},
+        {"R5", 5},
+        {"R6", 6},
+        {"R7", 7},
+        {"R8", 8},
+        {"R9", 9},
+        {"R10", 10},
+        {"R11", 11},
+        {"R12", 12},
+        {"R13", 13},
+        {"R14", 14},
+        {"R15", 15},
+        {"SCREEN", 16384},
+        {"KBD", 24576}
+    };
 
     std::unordered_map<std::string, std::string> jumpLookup = {{"", "000"}, {"JGT", "001"}, {"JEQ", "010"}, {"JGE", "011"}, {"JLT", "100"}, {"JNE", "101"}, {"JLE", "110"}, {"JMP", "111"}};
     std::unordered_map<std::string, std::string> destLookup = {
@@ -74,6 +100,17 @@ private:
         {"D&M", "1000000"},
         {"D|M", "1010101"}};
 
+
+    void populateSymbolTable(){
+        int i =0;
+        for(auto &sym: cleanInstructionList){
+            if(sym[0]=='('){
+                symbolTable[sym.substr(1,sym.size()-2)]=i;
+            }
+            else
+                ++i;
+        }
+    }
     void loadfile()
     {
         std::ifstream infile(inputFileName);
@@ -113,9 +150,16 @@ private:
         for (auto &ins : cleanInstructionList)
         {
             // handling A instruction
+            if (ins[0] == '(') continue;
             if (ins[0] == '@')
             {
                 std::string valueStr = ins.substr(1);
+                if(!isNumber(valueStr)){
+                    if(symbolTable.find(valueStr) == symbolTable.end()){
+                        symbolTable[valueStr]=variableAddress++;
+                    }
+                    valueStr = symbolTable[valueStr];
+                }
                 std::string binaryCode = std::bitset<16>(std::stoi(valueStr)).to_string();
                 machineInstructionList.push_back(binaryCode);
             }
@@ -148,6 +192,10 @@ private:
             }
         }
     }
+    bool isNumber(const std::string &s) {
+        return std::all_of(s.begin(), s.end(), ::isdigit);
+    }
+
     void writeOutput()
     {
         std::ofstream outfile(outputFileName);

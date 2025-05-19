@@ -158,7 +158,8 @@ private:
                     if(symbolTable.find(valueStr) == symbolTable.end()){
                         symbolTable[valueStr]=variableAddress++;
                     }
-                    valueStr = symbolTable[valueStr];
+                    valueStr = valueStr = std::to_string(symbolTable[valueStr]);
+
                 }
                 std::string binaryCode = std::bitset<16>(std::stoi(valueStr)).to_string();
                 machineInstructionList.push_back(binaryCode);

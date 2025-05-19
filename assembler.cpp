@@ -20,7 +20,6 @@ public:
     {
         loadfile();
         cleanInstructions();
-        printcleanfile();
         parseAndTranslate();
         writeOutput();
     }
@@ -32,6 +31,7 @@ private:
     std::vector<std::string> instructionList;
     std::vector<std::string> cleanInstructionList;
     std::vector<std::string> machineInstructionList;
+    std::unordered_map<std::string, int> symbolTable;
 
     std::unordered_map<std::string, std::string> jumpLookup = {{"", "000"}, {"JGT", "001"}, {"JEQ", "010"}, {"JGE", "011"}, {"JLT", "100"}, {"JNE", "101"}, {"JLE", "110"}, {"JMP", "111"}};
     std::unordered_map<std::string, std::string> destLookup = {
@@ -82,12 +82,6 @@ private:
             instructionList.push_back(instruction);
         }
         infile.close();
-    }
-    // debuggin function - TO REMOVE
-    void printcleanfile()
-    {
-        for (auto &i : cleanInstructionList)
-            std::cout << i << "\n";
     }
     void cleanInstructions()
     {
